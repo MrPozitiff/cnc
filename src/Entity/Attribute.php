@@ -1,7 +1,12 @@
 <?php
 
+/**
+ * @author Serhii Kovalov
+ */
+
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -17,14 +22,6 @@ class Attribute
     private $id;
 
     /**
-     * @var Category
-     *
-     * @ORM\ManyToOne(targetEntity="Category")
-     * @ORM\JoinColumn(name="category_id")
-     */
-    private $category;
-
-    /**
      * @var string
      *
      * @ORM\Column(type="string")
@@ -37,4 +34,16 @@ class Attribute
      * @ORM\Column(type="string")
      */
     private $unit;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="App\Entity\ProductAttributeValue", mappedBy="attribute")
+     */
+    private $products;
+
+    public function __construct()
+    {
+        $this->products = new ArrayCollection();
+    }
 }

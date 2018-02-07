@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @author Serhii Kovalov
+ */
+
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;

@@ -1,12 +1,20 @@
 <?php
 
+/**
+ * @author Serhii Kovalov
+ */
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ProductRepository")
+ *
+ * @Vich\Uploadable()
  */
 class Product
 {
@@ -54,23 +62,68 @@ class Product
     private $price;
 
     /**
-     * @var string
+     * @var array
+     *
+     * @ORM\Column(type="simple_array")
      */
-    private $dimentions;
+    private $dimensions;
+
+    /**
+     * @var array
+     *
+     * @ORM\Column(type="array")
+     */
+    private $workspace;
 
     /**
      * @var Image
+     *
+     * @ORM\OneToMany(targetEntity="App\Entity\Image")
      */
-    private $mainPicture;
+    private $mainImage;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(type="datetime")
+     */
+    private $createdAt;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(type="datetime")
+     */
+    private $updatedAt;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean")
+     */
+    private $enabled;
 
     /**
      * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="App\Entity\ProductAttributeValue", mappedBy="product")
      */
     private $attributes;
 
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="App\Entity\Image", mappedBy="product")
+     */
+    private $images;
+
+    /**
+     * Product constructor.
+     */
     public function __construct()
     {
         $this->attributes = new ArrayCollection();
+        $this->createdAt = new \DateTime('now');
     }
 
     /**
@@ -170,35 +223,35 @@ class Product
     }
 
     /**
+     * @return array
+     */
+    public function getDimensions()
+    {
+        return $this->dimensions;
+    }
+
+    /**
+     * @param array $dimensions
+     */
+    public function setDimensions(array $dimensions)
+    {
+        $this->dimensions = $dimensions;
+    }
+
+    /**
      * @return string
      */
-    public function getDimentions()
+    public function getMainImage()
     {
-        return $this->dimentions;
+        return $this->mainImage;
     }
 
     /**
-     * @param string $dimentions
+     * @param string $mainImage
      */
-    public function setDimentions(string $dimentions)
+    public function setMainImage(string $mainImage)
     {
-        $this->dimentions = $dimentions;
-    }
-
-    /**
-     * @return Image
-     */
-    public function getMainPicture()
-    {
-        return $this->mainPicture;
-    }
-
-    /**
-     * @param Image $mainPicture
-     */
-    public function setMainPicture(Image $mainPicture)
-    {
-        $this->mainPicture = $mainPicture;
+        $this->mainImage = $mainImage;
     }
 
     /**
@@ -215,5 +268,81 @@ class Product
     public function setAttributes(ArrayCollection $attributes)
     {
         $this->attributes = $attributes;
+    }
+
+    /**
+     * @return array
+     */
+    public function getWorkspace()
+    {
+        return $this->workspace;
+    }
+
+    /**
+     * @param array $workspace
+     *
+     * @return Product
+     */
+    public function setWorkspace(array $workspace): Product
+    {
+        $this->workspace = $workspace;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEnabled()
+    {
+        return $this->enabled;
+    }
+
+    /**
+     * @param bool $enabled
+     *
+     * @return Product
+     */
+    public function setEnabled(bool $enabled): Product
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    /**
+     * @param File $image
+     */
+    public function setImageFile(File $image = null)
+    {
+        $this->imageFile = $image;
+        if ($image) {
+            // if 'updatedAt' is not defined in your entity, use another property
+            $this->updatedAt = new \DateTime('now');
+        }
+    }
+
+    /**
+     * @return File
+     */
+    public function getImageFile()
+    {
+        return $this->imageFile;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->title;
     }
 }

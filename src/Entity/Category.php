@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @author Serhii Kovalov
+ */
+
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -38,18 +42,28 @@ class Category
      */
     private $description;
 
+
     /**
+     * Product in the category.
+     *
+     * @var Product[]
+     *
+     * @ORM\OneToMany(targetEntity="Product", mappedBy="category")
+     **/
+    protected $products;
+    /**
+     * The category parent.
+     *
      * @var Category
      *
-     *
-     */
-    private $parentCat;
+     * @ORM\ManyToOne(targetEntity="Category")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", nullable=true)
+     **/
+    protected $parent;
 
     /**
-     * @var ArrayCollection
+     * Category constructor.
      */
-    private $products;
-
     public function __construct()
     {
         $this->products = new ArrayCollection();
@@ -113,17 +127,21 @@ class Category
     /**
      * @return Category
      */
-    public function getParentCat()
+    public function getParent()
     {
-        return $this->parentCat;
+        return $this->parent;
     }
 
     /**
-     * @param Category $parentCat
+     * @param Category $parent
+     *
+     * @return Category
      */
-    public function setParentCat(Category $parentCat)
+    public function setParent(Category $parent): Category
     {
-        $this->parentCat = $parentCat;
+        $this->parent = $parent;
+
+        return $this;
     }
 
     /**

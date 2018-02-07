@@ -1,3 +1,15 @@
+vich_uploader:
+    db_driver: orm
+    mappings:
+        product_images:
+            uri_prefix:         /uploads/img
+            upload_destination: '%kernel.root_dir%/../public/uploads/img'
+
+            # le fichier doit être supprimé lorsqu'un nouveau fichier est téléchargé
+            delete_on_update :    true
+            #le fichier doit être supprimé lorsque l'entité est supprimée
+            delete_on_remove :    true
+
 easy_admin:
     formats:
         date:     'd/m/Y'
@@ -6,7 +18,40 @@ easy_admin:
     site_name: 'ACME Megacorp.'
     entities:
         # List the entity class name you want to manage
-        - App\Entity\Product
-        - App\Entity\Category
-        - App\Entity\Attribute
+        Product:
+            class: App\Entity\Product
+            label: 'Продукт'
+            list:
+                title: 'Продукция'
+                fields:
+                    - id
+                    - enabled
+                    - title
+                    - { property: 'price', format: '%.2f', css_class: text-right, label: 'Price, $'}
+                    - { property: 'image', type: 'image', base_path: '/uploads/img/' }
+                    - { property: 'workspace', label: 'Workspace {X, Y, Z}, mm' }
+                    - { property: 'dimensions', label: 'Dimensions {X, Y, Z}, mm' }
+                    - urlPath
+                    - category
+            form:
+                fields:
+                    - enabled
+                    - category
+                    - title
+                    - description
+                    - price
+                    - { property: 'workspace', label: 'Workspace {0 = X, 1 = Y, 2 = Z}, mm' }
+                    - { property: 'dimensions', label: 'Dimensions {0 = X, 1 = Y, 2 = Z}, mm' }
+                    - urlPath
+                    - { property: 'imageFile', type: 'vich_image' }
+
+        Category:
+            class: App\Entity\Category
+            label: 'Категория'
+        Attribute:
+            class: App\Entity\Category
+            label: 'Атрибуты товара'
+        Image:
+            class: App\Entity\Image
+            label: 'Фото товара'
 #        - App\Entity\User
